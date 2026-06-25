@@ -1,0 +1,18 @@
+{
+  ".cs": "csharp",
+  ".py": "python",
+  ".js": "javascript",
+  ".ts": "typescript",
+  ".go": "go",
+  ".json": "json",
+  ".html": "html",
+  ".css": "css",
+  ".cpp": "cpp",
+  ".h": "cpp",
+  ".java": "java",
+  ".kt": "kotlin",
+  ".swift": "swift",
+  ".rs": "rust",
+  ".sql": "sql",
+  ".sh": "bash"
+}
