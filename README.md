@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 
-Консольная утилита для автоматической сборки исходного кода из выбранных папок в один структурированный Markdown-файл. Идеально подходит для быстрой передачи контекста проекта в LLM (ChatGPT, Claude, DeepSeek и др.) без лишнего мусора и ручного копипаста.
+Консольная микро-утилита для автоматической сборки исходного кода из выбранных папок в один структурированный Markdown-файл. Идеально подходит для быстрой передачи контекста проекта в LLM (ChatGPT, Claude, DeepSeek и др.) без лишнего мусора и ручного копипаста.
 
 ---
 
