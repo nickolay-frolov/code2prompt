@@ -3,13 +3,8 @@ import os
 import sys
 
 
-def load_mapping():
+def load_mapping(script_dir: str) -> dict[str, str]:
     """Загружает маппинг языков из JSON-файла рядом со скриптом или EXE."""
-    if getattr(sys, "frozen", False):
-        script_dir = os.path.dirname(sys.executable)
-    else:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-
     config_path = os.path.join(script_dir, "mapping.json")
 
     default_mapping = {
@@ -28,14 +23,38 @@ def load_mapping():
             with open(config_path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
-            print(f"Предупреждение: Не удалось прочитать JSON ({e}).")
+            print(f"Предупреждение: Не удалось прочитать маппинг-языков ({e}).")
 
     return default_mapping
 
 
-def merge_code_to_markdown(directories):
-    """Рекурсивно обходит указанные директории, собирает файлы на основе JSON-конфига и объединяет их в Markdown."""
-    lang_mapping = load_mapping()
+def load_ignore(script_dir: str) -> list[str]:
+    """Загружает список директорий-исключений из JSON-файла рядом со скриптом или EXE."""
+    ignore_path = os.path.join(script_dir, "ignore.json")
+
+    default_ignore = [
+        ".git", 
+        ".gitignore",
+        ".venv",
+        "build",
+        "dist",
+        ".vscode",
+        ".vs",
+        "bin",
+    ]
+
+    if os.path.exists(ignore_path):
+        try:
+            with open(ignore_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+             print(f"Предупреждение: Не удалось прочитать игнор-лист ({e}).")
+
+    return default_ignore
+
+
+def merge_code_to_markdown(directories: str, lang_mapping: dict[str, str], ignore_list: list[str]):
+    """Рекурсивно обходит указанные директории, собирает файлы кода на основе JSON-конфига и объединяет их в Markdown."""
     extensions = tuple(lang_mapping.keys())
 
     for directory in directories:
@@ -53,9 +72,14 @@ def merge_code_to_markdown(directories):
         print(f"Обработка папки: {normalized_dir}")
 
         files_to_process = []
-        for root, _, files in os.walk(normalized_dir):
+        for root, dirs, files in os.walk(normalized_dir):
+            dirs[:] = [d for d in dirs if d not in ignore_list]
+
             for f in files:
-                if f.endswith(extensions) and f != output_name:
+                if f in ignore_list or f == output_name:
+                    continue
+
+                if f.endswith(extensions):
                     full_path = os.path.join(root, f)
                     rel_path = os.path.relpath(full_path, normalized_dir)
                     rel_path = rel_path.replace(os.sep, "/")
@@ -108,8 +132,23 @@ def merge_code_to_markdown(directories):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    paths = sys.argv[1:]
+    
+    if not paths:
+        current_dir = os.getcwd()
+        paths = [current_dir]
+
+    if not all(os.path.isdir(path) for path in paths):
+        print("Ошибка: Один или несколько указанных путей не являются папками!")
         print("Использование: code2prompt.exe <путь_к_папке1> <путь_к_папке2> ...")
         sys.exit(1)
 
-    merge_code_to_markdown(sys.argv[1:])
+    if getattr(sys, "frozen", False):
+        script_dir = os.path.dirname(sys.executable)
+    else:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    lang_mapping = load_mapping(script_dir)
+    ignore_list = load_ignore(script_dir)
+
+    merge_code_to_markdown(paths, lang_mapping, ignore_list)

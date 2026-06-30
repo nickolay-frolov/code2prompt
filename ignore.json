@@ -1,0 +1,20 @@
+[
+  ".git",
+  ".gitignore",
+  ".venv",
+  "venv",
+  "env",
+  "build",
+  "dist",
+  "bin",
+  "obj",
+  ".vscode",
+  ".vs",
+  "__pycache__",
+  ".pytest_cache",
+  "node_modules",
+  "package-lock.json",
+  "yarn.lock",
+  "README.md",
+  "config.local.json"
+]
